@@ -1,7 +1,8 @@
 # Web SSH 项目部署完整文档
 
 项目预览：ssh.45246326.xyz
-     ![Uploading test.jpg…]()
+  ![test](https://github.com/user-attachments/assets/cb853be8-e64e-4e30-821d-a059b39848ec)
+   
 
 ## 📌 项目目标
 

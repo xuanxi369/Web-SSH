@@ -26,8 +26,7 @@ Web-SSh/
 └── server/                # 后端 Node.js 服务
     ├── index.js
     ├── package.json
-    ├── package-lock.json
-    └── node_modules/
+    └── package-lock.json/
 ```
 
 ---
@@ -59,9 +58,20 @@ sudo dpkg --configure -a
 
 ### 第二步：上传项目文件
 
-- 通过 SCP 或 SFTP 将本地 `Web-SSh` 项目上传至 VPS（尤其包含 `node_modules`）
+- 通过 SCP 或 SFTP 将本地 `Web-SSh` 项目上传至 VPS
+- 在VPS中获取root权限
+```
+cd ~/Web-SSh/server
+npm install
+node index.js
+```
+### 第三步：启动node服务
+```
+node index.js
+```
+- 成功启动后，访问 VPS_IP+端口号
 
-### 第三步：安装 PM2 并守护服务
+### 第四步：安装 PM2 并守护服务
 
 ```bash(pm2服务用于项目后台安全运行，不至于挂死)
 sudo npm install -g pm2
@@ -70,8 +80,6 @@ pm2 start index.js --name web-ssh
 pm2 startup
 pm2 save
 ```
-
----
 
 ## 🔧 Web 无法连接的故障排查过程总结
 

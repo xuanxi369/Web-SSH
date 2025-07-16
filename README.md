@@ -1,5 +1,8 @@
 # Web SSH 项目部署完整文档
 
+    项目预览：ssh.45246326.xyz
+     ![Uploading test.jpg…]()
+
 ## 📌 项目目标
 
 将一个基于 Node.js 的 Web SSH 项目部署至一台 VPS，并通过 Cloudflare 提供域名访问，最终实现：
@@ -35,7 +38,7 @@ Web-SSh/
     vps建议品相好一点的，小鸡类型的可能项目部署之后
    会出现很多问题
    
-3. 安装 Node.js：
+2. 安装 Node.js：
  
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -

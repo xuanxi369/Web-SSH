@@ -31,13 +31,16 @@ Web-SSh/
 ### 第一步：VPS 基础配置
 
 1. 登录 VPS：
+
     vps建议品相好一点的，小鸡类型的可能项目部署之后
-   会出现很多问题 
+   会出现很多问题
+   
 3. 安装 Node.js：
-
+ 
+```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-
 sudo apt install -y nodejs
+```
 
 ❗ 遇到问题：`Could not get lock /var/lib/dpkg/lock-frontend`
 

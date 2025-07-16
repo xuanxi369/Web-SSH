@@ -22,11 +22,18 @@
 
 ```
 Web-SSh/
-├── client/                # 前端网页：index.html, css, js
-└── server/                # 后端 Node.js 服务
-    ├── index.js
-    ├── package.json
-    └── package-lock.json/
+├── client/                          # 前端网页资源
+│   ├── index.html                   # 网页入口 HTML 文件
+│   ├── css/                         # 样式表文件夹
+│   │   └── style.css                # 主样式文件
+│   └── js/                          # JavaScript 文件夹
+│       └── terminal.js             # Web终端交互逻辑脚本
+│
+└── server/                          # 后端 Node.js 服务
+    ├── index.js                    # 服务入口
+    ├── package.json               # 项目依赖定义
+    └── package-lock.json          # 依赖锁定文件
+
 ```
 
 ---

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Web SSH</title>
+  <link rel="stylesheet" href="https://unpkg.com/xterm/css/xterm.css" />
+  <link rel="stylesheet" href="./CSS/style.css" />
+</head>
+<body>
+  <div id="header" class="header">WEB-SSH: IP+Port+UserName+Passwd</div>
+  <div id="form" class="form-container">
+    <input id="host" placeholder="IPaddres" class="input-field" />
+    <input id="port" placeholder="SshPort" class="input-field" />
+    <input id="username" placeholder="UserName" class="input-field" />
+    <input id="password" placeholder="password" type="password" class="input-field" />
+    <button onclick="connectSSH()" class="connect-btn">连接</button>
+  </div>
+  <div id="terminal" class="terminal-container"></div>
+  <footer class="footer">
+    <p>2025@WEB-SSH&杨烜曦 | 联系方式：millychck@gmail.com</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/socket.io/client-dist/socket.io.min.js"></script>
+  <script src="https://unpkg.com/xterm/lib/xterm.js"></script>
+  <script src="./JS/terminal.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.form-container {
+  padding: 20px;
+  background: rgba(20, 33, 61, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #00ddeb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 0 20px rgba(0, 221, 235, 0.3);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.input-field {
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 5px rgba(0, 221, 235, 0.2);
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 0 0 10px #00ddeb;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.connect-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #00ddeb, #ff0077);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+}
+
+.connect-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 25px rgba(0, 221, 235, 0.8);
+}
+
+.terminal-container {
+  height: calc(90vh - 60px);
+  background: #0a0e17;
+  border: 2px solid #00ddeb;
+  border-radius: 10px;
+  margin: 20px;
+  box-shadow: 0 0 30px rgba(0, 221, 235, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 221, 235, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #00ddeb;
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(0, 221, 235, 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(0, 221, 235, 0.6);
+  }
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .input-field, .connect-btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+}

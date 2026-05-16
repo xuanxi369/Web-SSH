@@ -1,0 +1,444 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  ArrowUpRight, Github, Linkedin, Mail, MapPin, 
+  Cpu, Server, Globe, Box, Award, BookOpen, Fingerprint
+} from 'lucide-react';
+
+// --- 优雅的滚动浮现 Hook ---
+const useScrollReveal = (threshold = 0.1) => {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold, rootMargin: "0px 0px -50px 0px" }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, isVisible];
+};
+
+// --- 渐显包裹组件 ---
+const FadeIn = ({ children, delay = 0, className = "" }) => {
+  const [ref, isVisible] = useScrollReveal();
+  return (
+    <div 
+      ref={ref} 
+      className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// --- 交互式有机呼吸背景组件 ---
+const InteractiveBackground = () => {
+  useEffect(() => {
+    const blob1 = document.getElementById('blob1');
+    const blob2 = document.getElementById('blob2');
+    const blob3 = document.getElementById('blob3');
+
+    // 默认引力中心在屏幕正中央
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let currentX = targetX;
+    let currentY = targetY;
+
+    // 监听鼠标点击事件，改变引力中心
+    const handleGlobalClick = (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+    };
+    window.addEventListener('click', handleGlobalClick);
+
+    let animationFrameId;
+    const render = () => {
+      const time = Date.now();
+
+      // 缓动算法：让当前中心点丝滑地向鼠标点击点移动 (引力效果)
+      currentX += (targetX - currentX) * 0.03;
+      currentY += (targetY - currentY) * 0.03;
+
+      const updateBlob = (el, size, radiusX, radiusY, speed, offsetX, offsetY) => {
+        if (!el) return;
+        // 使用三角函数生成自由、不规则的游荡轨迹
+        const x = currentX + Math.sin(time * speed + offsetX) * radiusX - size / 2;
+        const y = currentY + Math.cos(time * speed * 0.8 + offsetY) * radiusY - size / 2;
+        el.style.transform = `translate(${x}px, ${y}px)`;
+      };
+
+      // 参数：元素, 尺寸, X游荡半径, Y游荡半径, 游荡速度, X相位, Y相位
+      updateBlob(blob1, 600, 250, 300, 0.0005, 0, 0);
+      updateBlob(blob2, 500, 350, 200, 0.0004, Math.PI, Math.PI / 2);
+      updateBlob(blob3, 550, 200, 350, 0.0006, Math.PI / 2, Math.PI);
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+    render();
+
+    return () => {
+      window.removeEventListener('click', handleGlobalClick);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50 mix-blend-multiply">
+      <div id="blob1" className="absolute top-0 left-0 w-[600px] h-[600px] bg-[#E0E7FF] blur-[100px] blob-shape-1 will-change-transform"></div>
+      <div id="blob2" className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#FCE7F3] blur-[120px] blob-shape-2 will-change-transform"></div>
+      <div id="blob3" className="absolute top-0 left-0 w-[550px] h-[550px] bg-[#E0F2FE] blur-[100px] blob-shape-3 will-change-transform"></div>
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] text-[#1A1A2E] font-sans selection:bg-[#E2E8F0] overflow-x-hidden relative">
+      
+      {/* 注入全局 CSS：定义有机体形变动画与卡片样式 */}
+      <style>{`
+        /* 有机体呼吸形变动画 (仅负责形状变化，位移交由JS控制) */
+        @keyframes organic-shape-1 {
+          0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+          33% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+          66% { border-radius: 50% 50% 40% 60% / 50% 60% 30% 60%; }
+        }
+        @keyframes organic-shape-2 {
+          0%, 100% { border-radius: 50% 50% 40% 60% / 50% 60% 30% 60%; }
+          33% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+          66% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+        }
+        
+        .blob-shape-1 { animation: organic-shape-1 15s ease-in-out infinite alternate; }
+        .blob-shape-2 { animation: organic-shape-2 18s ease-in-out infinite alternate; }
+        .blob-shape-3 { animation: organic-shape-1 20s ease-in-out infinite alternate-reverse; }
+
+        /* 高级亮色系阴影与卡片 */
+        .clean-card {
+          background-color: #FFFFFF;
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          border-radius: 20px;
+          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .clean-card:hover {
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.06);
+          transform: translateY(-2px);
+          border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* 隐藏原生滚动条并自定义亮色版本 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+      `}</style>
+
+      {/* --- 交互式动态背景层 --- */}
+      <InteractiveBackground />
+
+      {/* --- 顶部导航栏 --- */}
+      <header className="relative z-10 pt-10 px-6 md:px-16 max-w-7xl mx-auto flex justify-between items-center">
+        <div className="font-semibold text-lg tracking-tight flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+          <div className="w-2 h-2 rounded-full bg-[#4F46E5] animate-pulse"></div>
+          Charles Montgomery.
+        </div>
+        <div className="flex gap-5 text-[#64748B]">
+          <a href="https://github.com/xuanxi369" target="_blank" rel="noreferrer" className="hover:text-[#1A1A2E] transition-colors"><Github size={20} strokeWidth={1.5} /></a>
+          <a href="https://linkedin.com/in/charles-montgomery-891b02376/" target="_blank" rel="noreferrer" className="hover:text-[#1A1A2E] transition-colors"><Linkedin size={20} strokeWidth={1.5} /></a>
+          <a href="mailto:charlesiieao@gmail.com" className="hover:text-[#1A1A2E] transition-colors"><Mail size={20} strokeWidth={1.5} /></a>
+        </div>
+      </header>
+
+      <main className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 pb-32">
+        
+        {/* --- 首屏 Hero 区域 --- */}
+        <section className="pt-24 pb-20 md:pt-32 md:pb-32">
+          <FadeIn delay={100}>
+            <p className="text-[#64748B] font-medium tracking-wide text-sm mb-6 uppercase flex items-center gap-2">
+              <Fingerprint size={16} /> Data & Multimodal Developer
+            </p>
+          </FadeIn>
+          
+          <FadeIn delay={200}>
+            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter text-[#0F172A] leading-[1.05] mb-8">
+              杨曦 Yang Xi <br/>
+              <span className="text-[#94A3B8] font-light">Builds intelligent &</span><br/>
+              <span className="text-[#4F46E5]">scalable architecture.</span>
+            </h1>
+          </FadeIn>
+
+          <div className="grid md:grid-cols-2 gap-10 mt-12 md:mt-20">
+            <FadeIn delay={300}>
+              <p className="text-lg md:text-xl text-[#475569] leading-relaxed max-w-xl font-light">
+                立足于大数据的多模态开发者。深耕 AI 辅助开发 (Hermes Agent / Code X) 与本地大模型部署。
+                深入底层网络协议与 VPS 架构，致力于通过技术降低环境迁移损耗，打造具备高度扩展性的数字基础设施。
+              </p>
+            </FadeIn>
+            
+            <FadeIn delay={400} className="flex flex-col justify-end">
+              <div className="flex flex-wrap gap-4 text-sm font-medium relative z-20">
+                <a href="mailto:charlesiieao@gmail.com" className="px-6 py-3 rounded-full bg-[#1A1A2E] text-white hover:bg-[#334155] transition-colors flex items-center gap-2 shadow-lg shadow-black/5">
+                  联系我 <ArrowUpRight size={16} />
+                </a>
+                <div className="px-6 py-3 rounded-full bg-white border border-gray-200 text-[#475569] flex items-center gap-2">
+                  <MapPin size={16} className="text-[#94A3B8]" /> 四川·成都
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* --- 核心优势 Bento Grid (极简亮色版) --- */}
+        <section className="py-20 relative z-20">
+          <FadeIn>
+            <h2 className="text-sm font-bold text-[#94A3B8] uppercase tracking-widest mb-10 border-b border-gray-200 pb-4">
+              01 — Core Competencies
+            </h2>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            {/* 卡片 1: AI & LLM */}
+            <FadeIn delay={100} className="md:col-span-8 clean-card p-10 lg:p-12">
+              <Cpu className="text-[#4F46E5] mb-6" size={32} strokeWidth={1.5} />
+              <h3 className="text-2xl font-bold mb-4 text-[#0F172A]">AI Coding & LLM Ecosystem</h3>
+              <p className="text-[#475569] leading-relaxed mb-8 max-w-2xl text-lg">
+                重度 AI 原住民，具备 Agent 驱动的自动化开发与逻辑重构经验。深谙提示词工程 (Prompt Engineering) 与结构化任务拆解。
+              </p>
+              <div className="grid sm:grid-cols-2 gap-y-4 gap-x-8 text-sm text-[#64748B]">
+                <div className="flex items-start gap-2">
+                  <span className="text-[#4F46E5] mt-0.5">•</span>
+                  <span>主攻 Hermes Agent，侧攻 Code X</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#4F46E5] mt-0.5">•</span>
+                  <span>本地化部署各家开源大模型</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#4F46E5] mt-0.5">•</span>
+                  <span>精准把控人机协作边界以优化产出效能</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#4F46E5] mt-0.5">•</span>
+                  <span>ChatGPT / Claude / Gemini / Perplexity 高级矩阵生态</span>
+                </div>
+              </div>
+            </FadeIn>
+
+            {/* 卡片 2: Cloud & VPS */}
+            <FadeIn delay={200} className="md:col-span-4 clean-card p-8 lg:p-10 flex flex-col">
+              <Server className="text-[#0F172A] mb-6" size={28} strokeWidth={1.5} />
+              <h3 className="text-xl font-bold mb-3 text-[#0F172A]">网络架构与基建</h3>
+              <p className="text-[#475569] leading-relaxed text-sm flex-grow">
+                VPS 进阶玩家，擅长 hy2 协议，参与开发维护 hy2 Brutal 拥塞控制算法。作为 CloudFlare 优质会员，曾受邀参加 CDN 边缘计算亚洲峰会。
+              </p>
+            </FadeIn>
+
+            {/* 卡片 3: Hardware & Web3 */}
+            <FadeIn delay={300} className="md:col-span-5 clean-card p-8 lg:p-10">
+              <Globe className="text-[#0F172A] mb-6" size={28} strokeWidth={1.5} />
+              <h3 className="text-xl font-bold mb-3 text-[#0F172A]">硬件与 Web3 探索</h3>
+              <p className="text-[#475569] leading-relaxed text-sm mb-4">
+                拥有 Web3 建链经验，参与维护 IPFS 项目，编译量化合约。
+              </p>
+              <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
+                <span className="px-3 py-1 bg-gray-50 text-xs text-gray-500 rounded-md border border-gray-100">树莓派</span>
+                <span className="px-3 py-1 bg-gray-50 text-xs text-gray-500 rounded-md border border-gray-100">NAS</span>
+                <span className="px-3 py-1 bg-gray-50 text-xs text-gray-500 rounded-md border border-gray-100">STM32 单片机</span>
+              </div>
+            </FadeIn>
+
+            {/* 卡片 4: Indie Maker */}
+            <FadeIn delay={400} className="md:col-span-7 clean-card p-8 lg:p-10">
+              <Box className="text-[#0F172A] mb-6" size={28} strokeWidth={1.5} />
+              <h3 className="text-xl font-bold mb-3 text-[#0F172A]">独立项目与开源运营</h3>
+              <p className="text-[#475569] leading-relaxed text-sm mb-6 max-w-xl">
+                个人 GitHub 开源项目众多。成功部署邮件收发系统 (月上线访问率1K+)；开源影视网站 (月访问量1W+)。具备跨国服务运营经验 (解决新加坡税务，开通 Google AD，持有欧洲个人 Iban)。
+              </p>
+              <a href="https://github.com/xuanxi369" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A1A2E] hover:text-[#4F46E5] transition-colors group">
+                浏览 GitHub 仓库 <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+            </FadeIn>
+
+          </div>
+        </section>
+
+        {/* --- 项目经验 Projects (极简列表风格) --- */}
+        <section className="py-20 relative z-20">
+          <FadeIn>
+            <h2 className="text-sm font-bold text-[#94A3B8] uppercase tracking-widest mb-10 border-b border-gray-200 pb-4">
+              02 — Selected Projects
+            </h2>
+          </FadeIn>
+
+          <div className="space-y-12">
+            
+            {/* 项目 1 */}
+            <FadeIn delay={100} className="group">
+              <div className="grid md:grid-cols-4 gap-4 md:gap-10 items-baseline">
+                <div className="md:col-span-1">
+                  <span className="text-xs font-mono text-[#64748B]">01 / 架构升级</span>
+                </div>
+                <div className="md:col-span-3">
+                  <h3 className="text-2xl font-bold text-[#0F172A] mb-2 flex items-center gap-3">
+                    LIFE-LIVE 跳转系统 
+                    <span className="text-xs font-normal px-2 py-1 bg-gray-100 text-gray-500 rounded-md tracking-normal">life.45246326.xyz</span>
+                  </h3>
+                  <p className="text-[#475569] leading-relaxed mb-6">
+                    摒弃传统 VPS 模式，全面转向基于 Cloudflare 的 SaaS 托管方案。引入内网穿透(Tunneling)技术构建轻量化跳转机。通过深度解析防火墙规则与路径优化，实现除高风险地区外的全球稳定覆盖过滤。
+                  </p>
+                  <div className="flex gap-x-6 gap-y-2 flex-wrap text-sm text-[#94A3B8]">
+                    <span>Cloudflare CDN</span>
+                    <span>HTML5 / CSS3</span>
+                    <span>SaaS Hosting</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full h-px bg-gray-100 mt-12 group-last:hidden"></div>
+            </FadeIn>
+
+            {/* 项目 2 */}
+            <FadeIn delay={200} className="group">
+              <div className="grid md:grid-cols-4 gap-4 md:gap-10 items-baseline">
+                <div className="md:col-span-1">
+                  <span className="text-xs font-mono text-[#64748B]">02 / AI 赋能</span>
+                </div>
+                <div className="md:col-span-3">
+                  <h3 className="text-2xl font-bold text-[#0F172A] mb-2 flex items-center gap-3">
+                    CONTRACT GPT 合同解析系统 
+                    <span className="text-xs font-normal px-2 py-1 bg-gray-100 text-gray-500 rounded-md tracking-normal">cap.iieao.com</span>
+                  </h3>
+                  <p className="text-[#475569] leading-relaxed mb-6">
+                    依托 DeepSeek API 并运用提示词工程，打造精通中国劳动法律的专业律师智能体。纯无服务器部署，数据依托 CDN 零滞留。接入 JWT 安全认证系统与 CloudFlare WAF，最大化保护隐私安全。已基于 MIT 协议开源。
+                  </p>
+                  <div className="flex gap-x-6 gap-y-2 flex-wrap text-sm text-[#94A3B8]">
+                    <span>DeepSeek API</span>
+                    <span>JWT Auth</span>
+                    <span>Serverless</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full h-px bg-gray-100 mt-12 group-last:hidden"></div>
+            </FadeIn>
+
+            {/* 项目 3 */}
+            <FadeIn delay={300} className="group">
+              <div className="grid md:grid-cols-4 gap-4 md:gap-10 items-baseline">
+                <div className="md:col-span-1">
+                  <span className="text-xs font-mono text-[#64748B]">03 / 工具开发</span>
+                </div>
+                <div className="md:col-span-3">
+                  <h3 className="text-2xl font-bold text-[#0F172A] mb-2 flex items-center gap-3">
+                    Puter-Web 远控矩阵系统 
+                    <a href="https://github.com/xuanxi369/Puter-Web" target="_blank" rel="noreferrer" className="text-[#4F46E5] hover:text-[#3730A3] transition-colors"><ArrowUpRight size={20} /></a>
+                  </h3>
+                  <p className="text-[#475569] leading-relaxed mb-6">
+                    针对跨设备工作环境不一致的痛点，打造“零配置、低负载、秒响应”的应急访问方案。基于 Node.js 后端架构，集成 noVNC 与内置 Websockify，实现 RFB 协议至 WebSocket 的高效转换，通过单一浏览器完成远程桌面操作。
+                  </p>
+                  <div className="flex gap-x-6 gap-y-2 flex-wrap text-sm text-[#94A3B8]">
+                    <span>Node.js</span>
+                    <span>noVNC</span>
+                    <span>WebSocket</span>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+
+          </div>
+        </section>
+
+        {/* --- 教育、技能与荣誉双列布局 --- */}
+        <section className="py-20 grid md:grid-cols-2 gap-16 md:gap-24 relative z-20">
+          
+          {/* 左侧：教育与技能栈 */}
+          <div>
+            <FadeIn>
+              <h2 className="text-sm font-bold text-[#94A3B8] uppercase tracking-widest mb-10 border-b border-gray-200 pb-4 flex items-center justify-between">
+                03 — Background
+                <BookOpen size={16} />
+              </h2>
+            </FadeIn>
+
+            <FadeIn delay={100} className="mb-12">
+              <div className="text-xs text-[#94A3B8] mb-2 font-mono">2023.09 - 2026.07</div>
+              <h4 className="text-lg font-bold text-[#0F172A] mb-1">新疆生产建设兵团兴新职业技术学院</h4>
+              <div className="text-sm font-medium text-[#4F46E5] mb-3">大数据技术专业</div>
+              <p className="text-[#64748B] text-sm leading-relaxed">
+                主修 Docker、Python 编程与爬虫、SQL Server 数据库、数据可视化技术及 Linux 系统运维。绩点优秀，擅长理论结合真实项目实操。
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={200}>
+              <h5 className="text-sm font-bold text-[#0F172A] mb-4">技术栈栈桥</h5>
+              <div className="flex flex-wrap gap-2">
+                {['Python', 'SQL', 'Linux', 'Docker', 'Windows Server', 'AI Coding', 'VS Code', 'Cursor', 'Termius', 'ENSP', 'hiddify/clash'].map((skill, i) => (
+                  <span key={i} className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 text-[#475569] rounded hover:border-[#4F46E5] hover:text-[#4F46E5] transition-colors cursor-default">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+
+          {/* 右侧：奖项与认证 */}
+          <div>
+            <FadeIn>
+              <h2 className="text-sm font-bold text-[#94A3B8] uppercase tracking-widest mb-10 border-b border-gray-200 pb-4 flex items-center justify-between">
+                04 — Certifications
+                <Award size={16} />
+              </h2>
+            </FadeIn>
+
+            <div className="space-y-6">
+              <FadeIn delay={100}>
+                <div className="pl-4 border-l-2 border-[#4F46E5]">
+                  <h4 className="font-bold text-[#0F172A] text-sm md:text-base">全国职业院校技能大赛 · 大数据应用开发</h4>
+                  <p className="text-sm text-[#64748B] mt-1">新疆赛区团体三等奖 & 兵团二等奖 (2024)</p>
+                </div>
+              </FadeIn>
+              
+              <FadeIn delay={200}>
+                <div className="pl-4 border-l-2 border-gray-200">
+                  <h4 className="font-bold text-[#0F172A] text-sm md:text-base">前沿生态认证</h4>
+                  <ul className="text-sm text-[#64748B] mt-2 space-y-1.5">
+                    <li>• 百度智能云 · 生成式 AI 认证工程师</li>
+                    <li>• 华为开发者联盟 · HarmonyOS 高级认证</li>
+                    <li>• 阿里云 Apsara Clouder 专项认证 (通义灵码 / 百炼平台)</li>
+                    <li>• 开放原子开源基金会 (OpenHarmonyOS / OpenTenBase)</li>
+                  </ul>
+                </div>
+              </FadeIn>
+
+              <FadeIn delay={300}>
+                <div className="pl-4 border-l-2 border-gray-200">
+                  <h4 className="font-bold text-[#0F172A] text-sm md:text-base">跨界执照</h4>
+                  <ul className="text-sm text-[#64748B] mt-2 space-y-1.5">
+                    <li>• 中国民航局：轻型民用无人驾驶航空器操控理论合格证明</li>
+                    <li>• 国家地理：国家地理摄影师人才认证</li>
+                  </ul>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+          
+        </section>
+      </main>
+
+      {/* --- 极简 Footer --- */}
+      <footer className="border-t border-gray-200 bg-[#F8F9FA] relative z-20">
+        <div className="max-w-7xl mx-auto px-6 md:px-16 py-10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#64748B]">
+          <div>
+            &copy; {new Date().getFullYear()} Charles Montgomery (杨曦). All rights reserved.
+          </div>
+          <div className="flex items-center gap-2 font-medium">
